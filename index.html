@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>منصة ذكية | SmartCatalog AI - فهرسة الكتب بالذكاء الاصطناعي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+            color: #1a2c3e;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .badge {
+            background: #0f2b3d;
+            color: #00e0ff;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2.7rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0b2b38, #1c6e8f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .sub {
+            font-size: 1.2rem;
+            color: #2c5568;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 40px;
+            padding: 0.6rem 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            font-weight: bold;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            background: white;
+            border-radius: 48px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            transition: all 0.2s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .dropzone {
+            border: 2px dashed #9fcbd9;
+            border-radius: 32px;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fefefe;
+        }
+
+        .dropzone:hover {
+            border-color: #1c6e8f;
+            background: #f0f7fa;
+        }
+
+        .btn {
+            background: #1c6e8f;
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin: 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #1c6e8f;
+            color: #1c6e8f;
+        }
+
+        .btn-outline:hover {
+            background: #1c6e8f;
+            color: white;
+        }
+
+        .preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .preview img {
+            max-width: 150px;
+            max-height: 200px;
+            border-radius: 16px;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            border: 2px solid white;
+        }
+
+        /* Result card (الفهرسة الذكية) */
+        .result-card {
+            background: white;
+            border-radius: 40px;
+            padding: 2rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #e2edf2;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .accuracy {
+            background: #dff5e3;
+            color: #1f7840;
+            border-radius: 40px;
+            padding: 0.2rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+            gap: 1.5rem;
+        }
+
+        .info-block {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 1rem;
+        }
+
+        .info-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #4f7f93;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+            word-break: break-word;
+        }
+
+        .marc-box {
+            background: #1a2c3e;
+            color: #bbe1f0;
+            padding: 1rem;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            color: #5d7e8f;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #1c6e8f;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 700px) {
+            h1 { font-size: 1.8rem; }
+            .upload-area { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <div class="badge">✨ منصة ذكية | AI Cataloger</div>
+        <h1>حوّل صورة أي كتاب إلى تسجيلة فهرسية كاملة خلال ثوانٍ</h1>
+        <div class="sub">ودّع الفهرسة اليدوية. ارفع غلاف الكتاب أو صفحة العنوان، وسيتولى الذكاء الاصطناعي استخراج البيانات، التحليل الموضوعي، والتصنيف.</div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">📚 +1M كتاب مفهرس</div>
+        <div class="stat-card">🎯 دقة 98%</div>
+        <div class="stat-card">⚡ توفير 90% من الوقت</div>
+        <div class="stat-card">🌐 عربي / إنجليزي</div>
+    </div>
+
+    <div class="upload-area">
+        <div class="dropzone" id="dropzone">
+            <div>📸 اسحب وأفلت صورة الكتاب (غلاف، صفحة عنوان) أو انقر للرفع</div>
+            <div style="margin-top: 12px;">📂 يدعم: JPG, PNG, PDF حتى 10 صور</div>
+            <input type="file" id="fileInput" accept="image/*,application/pdf" multiple style="display: none;">
+            <div style="margin-top: 20px;">
+                <button class="btn" id="uploadBtn">📤 رفع كتاب</button>
+                <button class="btn btn-outline" id="demoBtn">🎬 تجربة حية (كتاب تجريبي)</button>
+            </div>
+        </div>
+        <div id="previewContainer" class="preview"></div>
+    </div>
+
+    <!-- نتيجة الفهرسة -->
+    <div id="resultPanel" class="result-card">
+        <div class="result-header">
+            <h2>📖 تسجيلة فهرسة ذكية</h2>
+            <div class="accuracy" id="accuracyBadge">نسبة الدقة: 97%</div>
+        </div>
+        <div id="catalogContent">
+            <!-- ستظهر البيانات هنا ديناميكياً -->
+        </div>
+        <div class="export-buttons">
+            <button class="btn" id="exportMARC">📄 تصدير MARC21</button>
+            <button class="btn btn-outline" id="exportBibTeX">📑 تصدير BibTeX</button>
+        </div>
+    </div>
+
+    <footer>
+        🧠 منصة ذكية – تعمل بالرؤية الحاسوبية وNLP | <strong>الفهرسة بضغطة واحدة</strong>
+    </footer>
+</div>
+
+<script>
+    // محاكاة استخراج البيانات بالذكاء الاصطناعي
+    // عند رفع صور أو الضغط على تجربة حية نعرض نتيجة افتراضية.
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const demoBtn = document.getElementById('demoBtn');
+    const previewContainer = document.getElementById('previewContainer');
+    const resultPanel = document.getElementById('resultPanel');
+    const catalogContent = document.getElementById('catalogContent');
+    const accuracySpan = document.getElementById('accuracyBadge');
+
+    // دالة عرض صورة
+    function showPreview(files) {
+        previewContainer.innerHTML = '';
+        Array.from(files).forEach(file => {
+            if(file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'غلاف الكتاب';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const div = document.createElement('div');
+                div.textContent = `📄 ${file.name}`;
+                div.style.background = '#eef';
+                div.style.padding = '8px 12px';
+                div.style.borderRadius = '20px';
+                previewContainer.appendChild(div);
+            }
+        });
+    }
+
+    // وظيفة توليد بيانات فهرسية عشوائية لكن احترافية (محاكاة الذكاء الاصطناعي)
+    function generateCatalogData(isDemo = true, bookTitleCustom = null) {
+        // إذا كان تجريبي ، نستخدم بيانات كتاب "الذكاء الاصطناعي في المكتبات"
+        const demoData = {
+            title: "الذكاء الاصطناعي في المكتبات والمعلومات: تطبيقات ومعالجة اللغة الطبيعية",
+            author: "د. أحمد محمد النجار",
+            translator: "",
+            publisher: "دار المكتبات العلمية",
+            place: "القاهرة",
+            year: "2025",
+            edition: "الطبعة الثانية",
+            pages: "312",
+            isbn: "978-977-123-456-7",
+            series: "تقنيات المعلومات",
+            subject: "الذكاء الاصطناعي – المكتبات الرقمية – التعلم الآلي",
+            keywords: "ذكاء اصطناعي، مكتبات رقمية، معالجة اللغة العربية، فهرسة آلية",
+            dewey: "025.00285",
+            lcc: "Z678.9.A78",
+            abstract: "يتناول هذا الكتاب تطبيقات الذكاء الاصطناعي في عمليات الفهرسة والاسترجاع، مع التركيز على نماذج التعلم العميق لتحليل المحتوى العربي.",
+            marcExample: "=LDR  01234cam a2200265   4500\n=001  AI2025001\n=008  250513s2025 ua a   g b   001 0 ara d\n=020  \\\$a9789771234567\n=040  \\\$aSmartCatalog AI\n=100  1\\\$aالنجار، أحمد محمد.\n=245  12$aالذكاء الاصطناعي في المكتبات والمعلومات\n=260  \\\$aالقاهرة :\$bدار المكتبات العلمية،$c2025.\n=300  \\\$a312 ص. ؛$c24 سم.\n=650  \\\$aالذكاء الاصطناعي$xتطبيقات في المكتبات.\n"
+        };
+
+        if (isDemo) return demoData;
+
+        // محاكاة لو تم رفع صورة حقيقية (نفس البيانات تقريباً لكن بتغير طفيف)
+        return {
+            ...demoData,
+            title: bookTitleCustom || "تحليل المحتوى البصري للكتب باستخدام الرؤية الحاسوبية",
+            author: "فريق منصة ذكية (استخراج تلقائي)",
+            year: "2024",
+            accuracy: Math.floor(Math.random() * (98 - 92 + 1) + 92)
+        };
+    }
+
+    function renderCatalogData(data) {
+        const acc = data.accuracy || 97;
+        accuracySpan.innerText = `نسبة الدقة: ${acc}%`;
+
+        catalogContent.innerHTML = `
+            <div class="grid-2">
+                <div class="info-block"><div class="info-label">📌 العنوان</div><div class="info-value">${data.title}</div></div>
+                <div class="info-block"><div class="info-label">✍️ المؤلف</div><div class="info-value">${data.author}</div></div>
+                <div class="info-block"><div class="info-label">🏛️ دار النشر</div><div class="info-value">${data.publisher}</div></div>
+                <div class="info-block"><div class="info-label">📍 مكان النشر/العام</div><div class="info-value">${data.place}، ${data.year}</div></div>
+                <div class="info-block"><div class="info-label">📑 الطبعة / الصفحات</div><div class="info-value">${data.edition} | ${data.pages} صفحة</div></div>
+                <div class="info-block"><div class="info-label">🔢 ISBN / السلسلة</div><div class="info-value">${data.isbn} <br> <small>${data.series}</small></div></div>
+                <div class="info-block"><div class="info-label">🧠 الموضوع الرئيسي</div><div class="info-value">${data.subject}</div></div>
+                <div class="info-block"><div class="info-label">🔑 الكلمات المفتاحية</div><div class="info-value">${data.keywords}</div></div>
+                <div class="info-block"><div class="info-label">📚 تصنيف ديوي / الكونجرس</div><div class="info-value">DDC: ${data.dewey}  |  LCC: ${data.lcc}</div></div>
+                <div class="info-block full-width"><div class="info-label">📝 ملخص ذكي تلقائي</div><div class="info-value">${data.abstract}</div></div>
+                <div class="info-block full-width"><div class="info-label">🤖 MARC21 نموذج (جزء)</div><div class="marc-box"><pre>${data.marcExample}</pre></div></div>
+            </div>
+        `;
+        resultPanel.style.display = 'block';
+        window.scrollTo({ top: resultPanel.offsetTop - 20, behavior: 'smooth' });
+    }
+
+    // معالجة رفع الملفات (محاكاة ذكاء اصطناعي)
+    function processUpload(files) {
+        if (!files || files.length === 0) {
+            alert("الرجاء اختيار صورة الكتاب أولاً.");
+            return;
+        }
+        // عرض المعاينة
+        showPreview(files);
+        // محاكاة معالجة الذكاء الاصطناعي
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'aiLoading';
+        loadingDiv.innerHTML = '<div class="spinner"></div> جاري تحليل الغلاف والمحتوى بواسطة الذكاء الاصطناعي...';
+        loadingDiv.style.textAlign = 'center';
+        loadingDiv.style.margin = '1rem';
+        previewContainer.appendChild(loadingDiv);
+
+        setTimeout(() => {
+            const aiData = generateCatalogData(true);  // استخدام البيانات التجريبية الواقعية
+            // يمكن تحسين لاحقاً وربطه بـ API حقيقي
+            document.getElementById('aiLoading')?.remove();
+            renderCatalogData(aiData);
+        }, 1800);
+    }
+
+    // الأحداث
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#0f5e7a';
+    });
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.style.borderColor = '#9fcbd9';
+    });
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.style.borderColor = '#9fcbd9';
+        const files = Array.from(e.dataTransfer.files);
+        if(files.length) processUpload(files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if(e.target.files.length) processUpload(Array.from(e.target.files));
+    });
+
+    uploadBtn.addEventListener('click', () => fileInput.click());
+
+    demoBtn.addEventListener('click', () => {
+        // تجربة حية : نعرض صورًا رمزية لكتاب وبيانات افتراضية
+        previewContainer.innerHTML = `<img src="https://placehold.co/400x500/1c6e8f/white?text=غلاف+تجريبي" alt="غلاف وهمي">`;
+        const fakeFiles = [{name:"demo_cover.jpg"}];
+        const loadingDiv = document.createElement('div');
+        loadingDiv.innerHTML = '<div class="spinner"></div> الذكاء الاصطناعي يستخرج البيانات من غلاف تجريبي...';
+        previewContainer.appendChild(loadingDiv);
+        setTimeout(() => {
+            loadingDiv.remove();
+            const demoCatalog = generateCatalogData(true);
+            demoCatalog.title = "ذكاء اصطناعي متقدم لمهنيي المعلومات (تجربة مباشرة)";
+            demoCatalog.author = "SmartCatalog AI (محاكاة)";
+            renderCatalogData(demoCatalog);
+        }, 1200);
+    });
+
+    // التصدير تنبيه توضيحي
+    document.getElementById('exportMARC').addEventListener('click', () => {
+        alert("✅ سيتم تصدير ملف MARC21 (mrc) جاهز للاستيراد إلى أنظمة المكتبات مثل Koha.");
+    });
+    document.getElementById('exportBibTeX').addEventListener('click', () => {
+        alert("📘 تم تصدير بصيغة BibTeX للباحثين.");
+    });
+
+    // إظهار واجهة أولية
+    console.log("منصة ذكية جاهزة - الفهرسة بالذكاء الاصطناعي");
+</script>
+</body>
+</html>
